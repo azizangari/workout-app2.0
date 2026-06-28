@@ -1475,6 +1475,45 @@ function saveJson(key, val) {
   }
 }
 
+function resetExercisePreviousData() {
+  WORKOUT_DAYS.forEach((day) => {
+    day.exercises.forEach((ex) => {
+      if (ex.type === 'superset') {
+        ex.movements.forEach((mv) => {
+          mv.previous = Array.from({ length: ex.sets }, () => ({ display: '—' }));
+        });
+        return;
+      }
+      const count = ex.sets || ex.defaultSets || 3;
+      ex.previous = Array.from({ length: count }, () => ({ display: '—' }));
+    });
+  });
+}
+
+function clearAllAppData() {
+  hideRestOverlay();
+  try {
+    localStorage.removeItem(DRAFT_KEY);
+    localStorage.removeItem(HISTORY_KEY);
+    localStorage.removeItem(LAST_KEY);
+    localStorage.removeItem(REST_TIMER_KEY);
+  } catch {
+    /* ignore */
+  }
+  resetExercisePreviousData();
+  state.dayId = null;
+  state.tab = 'workout';
+}
+
+function promptClearAllData() {
+  const confirmed = confirm(
+    '⚠️ WARNING\n\nThis permanently deletes ALL workout data:\n• In-progress workouts\n• Saved history\n• Previous set records\n\nThis cannot be undone.'
+  );
+  if (!confirmed) return;
+  clearAllAppData();
+  render();
+}
+
 function getDay(id) {
   return WORKOUT_DAYS.find((d) => d.id === id);
 }
