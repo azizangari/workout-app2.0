@@ -86,6 +86,16 @@ body {
   gap: 0.75rem;
 }
 
+.session-toolbar .toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.session-toolbar .toolbar-btn.danger {
+  color: #c41e16;
+}
+
 .session-toolbar .icon-btn {
   border: none;
   background: none;
@@ -960,7 +970,7 @@ function exerciseImageSrc(id) {
  */
 
 const REST_SECONDS = 120;
-const APP_VERSION = '2025.06.27';
+const APP_VERSION = '2025.06.27-2';
 
 const WORKOUT_DAYS = [
   {
@@ -1764,7 +1774,10 @@ function renderSession(dayId) {
 
   app.innerHTML = `
     <header class="session-toolbar">
-      <button type="button" class="toolbar-btn" data-action="back">Back</button>
+      <div class="toolbar-left">
+        <button type="button" class="toolbar-btn" data-action="back">Back</button>
+        <button type="button" class="toolbar-btn danger" data-action="cancel">Cancel</button>
+      </div>
       <div class="toolbar-right">
         <button type="button" class="toolbar-btn save-top" data-action="save">Save</button>
       </div>
@@ -1896,6 +1909,18 @@ function bindSessionEvents(dayId, draft) {
   app.querySelector('[data-action="back"]')?.addEventListener('click', () => {
     leaveSessionView();
     render();
+  });
+
+  app.querySelector('[data-action="cancel"]')?.addEventListener('click', () => {
+    const label = day ? `${day.name}: ${day.subtitle}` : 'this workout';
+    if (
+      confirm(
+        `Cancel ${label}?\n\nYou'll lose this workout — all unsaved sets and notes will be discarded.`
+      )
+    ) {
+      discardActiveSession();
+      render();
+    }
   });
 
   app.querySelectorAll('[data-action="save"]').forEach((btn) => {
