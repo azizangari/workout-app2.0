@@ -933,7 +933,7 @@ function exerciseImageSrc(id) {
  */
 
 const REST_SECONDS = 120;
-const APP_VERSION = '2025.06.27-7';
+const APP_VERSION = '2025.06.27-8';
 
 const WORKOUT_DAYS = [
   {
@@ -1469,42 +1469,22 @@ function saveJson(key, val) {
   }
 }
 
-function resetExercisePreviousData() {
-  WORKOUT_DAYS.forEach((day) => {
-    day.exercises.forEach((ex) => {
-      if (ex.type === 'superset') {
-        ex.movements.forEach((mv) => {
-          mv.previous = Array.from({ length: ex.sets }, () => ({ display: '—' }));
-        });
-        return;
-      }
-      const count = ex.sets || ex.defaultSets || 3;
-      ex.previous = Array.from({ length: count }, () => ({ display: '—' }));
-    });
-  });
-}
-
-function clearAllAppData() {
+function clearWorkoutEntries(dayId) {
   hideRestOverlay();
-  try {
-    localStorage.removeItem(DRAFT_KEY);
-    localStorage.removeItem(HISTORY_KEY);
-    localStorage.removeItem(LAST_KEY);
-    localStorage.removeItem(REST_TIMER_KEY);
-  } catch {
-    /* ignore */
-  }
-  resetExercisePreviousData();
-  state.dayId = null;
-  state.tab = 'workout';
+  startFreshWorkout(dayId);
 }
 
-function promptClearAllData() {
-  const confirmed = confirm(
-    '⚠️ WARNING\n\nThis permanently deletes ALL workout data:\n• In-progress workouts\n• Saved history\n• Previous set records\n\nThis cannot be undone.'
-  );
-  if (!confirmed) return;
-  clearAllAppData();
+function promptClearWorkout(dayId) {
+  const day = getDay(dayId);
+  const label = day ? `${day.name}: ${day.subtitle}` : 'this workout';
+  if (
+    !confirm(
+      `⚠️ WARNING\n\nClear all entered reps, weights, and notes for ${label}?`
+    )
+  ) {
+    return;
+  }
+  clearWorkoutEntries(dayId);
   render();
 }
 
@@ -1729,7 +1709,7 @@ function renderSession(dayId) {
     </header>
     <div class="session-day-bar">
       <span class="session-day-title">${escapeHtml(day.name)}: ${escapeHtml(day.subtitle)}</span>
-      <button type="button" class="clear-all-btn-sm" data-action="clear-all" aria-label="Clear all workout data">⚠ Clear all</button>
+      <button type="button" class="clear-all-btn-sm" data-action="clear-all" aria-label="Clear entered workout data">⚠ Clear</button>
     </div>
     <div class="session-body has-nav">
       ${day.exercises.map((ex) => renderExerciseCard(ex, dayId, draft)).join('')}
@@ -1872,7 +1852,7 @@ function bindSessionEvents(dayId, draft) {
     }
   });
 
-  app.querySelector('[data-action="clear-all"]')?.addEventListener('click', promptClearAllData);
+  app.querySelector('[data-action="clear-all"]')?.addEventListener('click', () => promptClearWorkout(dayId));
 
   app.querySelectorAll('[data-action="save"]').forEach((btn) => {
     btn.addEventListener('click', () => saveSession(dayId));
