@@ -153,7 +153,7 @@ body {
 
 /* Session scroll */
 .session-body {
-  padding: 0 0 6.5rem;
+  padding: 0 0 10rem;
 }
 
 .exercise-card {
@@ -325,18 +325,54 @@ body {
   font-weight: 600;
 }
 
-.add-set-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  margin-top: 0.5rem;
-  padding: 0.35rem 0;
-  border: none;
-  background: none;
-  color: var(--blue);
+/* Superset */
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+.exercise-notes label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.exercise-notes textarea {
+  width: 100%;
+  min-height: 3.25rem;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fafafa;
   font: inherit;
   font-size: 0.9rem;
-  cursor: pointer;
+  line-height: 1.4;
+  resize: vertical;
+}
+
+.exercise-notes textarea:focus {
+  outline: none;
+  border-color: var(--blue);
+  background: var(--surface);
+}
+
+.exercise-notes textarea::placeholder {
+  color: var(--muted);
+}
+
+.history-exercise-note {
+  margin: 0.35rem 0 0;
+  padding: 0.5rem 0.65rem;
+  border-radius: 8px;
+  background: var(--bg);
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--text);
+  white-space: pre-wrap;
 }
 
 /* Superset */
@@ -396,7 +432,7 @@ body {
 /* Bottom save */
 .session-footer {
   position: fixed;
-  bottom: 0;
+  bottom: calc(3.35rem + env(safe-area-inset-bottom));
   left: 0;
   right: 0;
   z-index: 30;
@@ -444,6 +480,15 @@ body {
   margin: 0;
   font-size: 0.9rem;
   color: var(--muted);
+}
+
+.history-session-note {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius);
+  background: var(--blue-light);
+  font-size: 0.85rem;
+  color: var(--text);
 }
 
 .progress-panel {
@@ -720,8 +765,84 @@ body {
 }
 
 .home-body.has-nav,
-.history-page.has-nav {
+.history-page.has-nav,
+.session-body.has-nav {
   padding-bottom: 4.5rem;
+}
+
+.active-session-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius);
+  background: var(--blue-light);
+  border: 1px solid rgba(0, 122, 255, 0.15);
+}
+
+.active-session-banner .banner-text {
+  flex: 1 1 10rem;
+  min-width: 0;
+}
+
+.active-session-banner strong {
+  display: block;
+  font-size: 0.95rem;
+}
+
+.active-session-banner span {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.active-session-banner .banner-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.active-session-banner button {
+  padding: 0.45rem 0.85rem;
+  border: none;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.active-session-banner [data-action="continue-session"] {
+  background: var(--blue);
+  color: #fff;
+}
+
+.active-session-banner [data-action="discard-session"] {
+  background: var(--surface);
+  color: var(--muted);
+}
+
+.day-pill.in-progress {
+  outline: 2px solid var(--blue);
+  outline-offset: -2px;
+}
+
+.day-pill.in-progress .day-status {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 0.75rem;
+  color: var(--blue);
+  font-weight: 600;
+}
+
+.app-version {
+  margin: 1.25rem 0 0;
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--muted);
 }
 
 .boot-screen {
@@ -771,50 +892,44 @@ const EXERCISE_IMAGES = {
   // Day 1 — Pull + Legs
   'd1-muscle-up':
     'https://upload.wikimedia.org/wikipedia/commons/5/58/Muscle-up.gif',
-  'd1-pull-up': `${WGER}/181/Chin-ups-1.png`,
-  'd1-hip-abduction':
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Hip_abductor_machine.jpg/500px-Hip_abductor_machine.jpg',
-  'd1-hip-thrust': `${WGER}/128/Hyperextensions-1.png`, // hip extension pattern (machine photo welcome in assets/)
-  'd1-leg-press':
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Leg_press_machine.jpg/500px-Leg_press_machine.jpg',
-  'd1-machine-curl': `${WGER}/193/Preacher-curl-3-1.png`,
-  'd1-incline-db-curl': `${WGER}/74/Bicep-curls-1.png`,
+  'd1-pull-up': `${WGER}/475/b0554016-16fd-4dbe-be47-a2a17d16ae0e.jpg`,
+  'd1-hip-abduction': `${WGER}/1748/923a3ff7-c269-49bd-9f03-697151a40f06.jpg`,
+  'd1-hip-thrust': `${WGER}/1642/a81ad922-caf5-47f8-99b4-640cb0717436.webp`,
+  'd1-leg-press': `${WGER}/371/d2136f96-3a43-4d4c-9944-1919c4ca1ce1.webp`,
+  'd1-machine-curl': `${WGER}/1448/2184e68c-32b5-413f-a7c1-4a2d1bb98c35.png`,
+  'd1-incline-db-curl':
+    'https://upload.wikimedia.org/wikipedia/commons/8/81/Incline-biceps-curl-1.gif',
 
   // Day 2 — Push + Abs
-  'd2-shoulder-press': `${WGER}/53/Shoulder-press-machine-1.png`,
-  'd2-dips': `${WGER}/83/Bench-dips-1.png`,
-  'd2-chest-fly': `${WGER}/98/Butterfly-machine-1.png`,
-  'd2-tricep-rope':
-    'https://upload.wikimedia.org/wikipedia/commons/7/74/Triceps-pushdown-1.gif',
-  'd2-tricep-overhead':
-    'https://upload.wikimedia.org/wikipedia/commons/c/ca/Seated-overhead-triceps-extension-1.gif',
-  'd2-wrist-curl':
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/2/29/Exercise_Wrist_Curls.png/500px-Exercise_Wrist_Curls.png',
-  'd2-abs-superset': `${WGER}/91/Crunches-1.png`,
-  'd2-jackknife': `${WGER}/125/Leg-raises-1.png`,
+  'd2-shoulder-press': `${WGER}/53/Shoulder-press-machine-2.png`,
+  'd2-dips': `${WGER}/194/34600351-8b0b-4cb0-8daa-583537be15b0.png`,
+  'd2-chest-fly': `${WGER}/926/ae9deb5d-a1e9-4c30-b1e3-c128ba5d4969.png`,
+  'd2-tricep-rope': `${WGER}/1185/c5ca283d-8958-4fd8-9d59-a3f52a3ac66b.jpg`,
+  'd2-tricep-overhead': `${WGER}/1519/fab7f641-27d4-40b5-8edd-1a0a137bfd94.gif`,
+  'd2-wrist-curl': `${WGER}/51/f1730f56-7aca-4566-8338-3e42b1bee6e1.webp`,
+  'd2-abs-superset': `${WGER}/1648/63ae02d6-6dd9-4e9e-84da-d4905e78a33c.jpg`,
+  'd2-jackknife': `${WGER}/1889/bc51ef67-0c12-4340-a36c-42ef722778dd.png`,
   'd2-bicycle': `${WGER}/176/Cross-body-crunch-1.png`,
   'd2-crunch': `${WGER}/91/Crunches-1.png`,
 
   // Day 3 — Pull + Legs
-  'd3-glute-kickback': `${WGER}/118/standing-leg-curls-large-1.png`, // standing leg machine; add cable kickback photo if you have one
-  'd3-machine-deadlift': `${WGER}/161/Dead-lifts-1.png`,
-  'd3-leg-extension':
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/LegExtensionMachineExercise.JPG/500px-LegExtensionMachineExercise.JPG',
-  'd3-lateral-row': `${WGER}/143/Cable-seated-rows-1.png`,
-  'd3-shrug': `${WGER}/150/Barbell-shrugs-1.png`,
+  'd3-glute-kickback': `${WGER}/1131/3bcf3024-2dcc-4995-9694-55aa2c2e4a9a.png`,
+  'd3-machine-deadlift': `${WGER}/161/Dead-lifts-2.png`,
+  'd3-leg-extension': `${WGER}/369/78c915d1-e46d-4d30-8124-65d68664c3ef.png`,
+  'd3-lateral-row': `${WGER}/921/2555c4c3-a84d-47db-b83b-cbf721f12e45.png`,
+  'd3-shrug': `${WGER}/570/68b4a33f-40f1-4dda-b56c-a2e20ed13903.jpg`,
   'd3-hammer-curl': `${WGER}/86/Bicep-hammer-curl-1.png`,
-  'd3-cable-curl': `${WGER}/81/Biceps-curl-1.png`,
+  'd3-cable-curl': `${WGER}/129/Standing-biceps-curl-1.png`,
 
   // Day 4 — Push + Abs
-  'd4-incline-press': `${WGER}/16/Incline-press-1.png`,
+  'd4-incline-press': `${WGER}/925/67dbb1c9-b378-46f9-adb6-1f55b3d3007a.png`,
   'd4-db-bench': `${WGER}/97/Dumbbell-bench-press-1.png`,
   'd4-db-shoulder': `${WGER}/123/dumbbell-shoulder-press-large-1.png`,
-  'd4-lateral-raise': `${WGER}/148/lateral-dumbbell-raises-large-1.png`,
+  'd4-lateral-raise': `${WGER}/1378/7c1fcf34-fb7e-45e7-a0c1-51f296235315.jpg`,
   'd4-tricep-single':
     'https://upload.wikimedia.org/wikipedia/commons/9/9e/One-arm-triceps-extension-1.gif',
-  'd4-tricep-kickback':
-    'https://upload.wikimedia.org/wikipedia/commons/7/71/Triceps-kickback-1.gif',
-  'd4-hanging-leg-raise': `${WGER}/125/Leg-raises-2.png`,
+  'd4-tricep-kickback': `${WGER}/990/de20457c-914a-45c9-8cf9-0ad9739759a1.png`,
+  'd4-hanging-leg-raise': `${WGER}/979/27097a3a-5749-428d-b94c-6082afe390f6.png`,
 };
 
 /** Remote illustration URL for an exercise. */
@@ -845,6 +960,7 @@ function exerciseImageSrc(id) {
  */
 
 const REST_SECONDS = 120;
+const APP_VERSION = '2025.06.27';
 
 const WORKOUT_DAYS = [
   {
@@ -1434,6 +1550,7 @@ function initDraft(dayId) {
     if (ex.type === 'superset') {
       exercises[ex.id] = {
         type: 'superset',
+        notes: '',
         rounds: ex.sets,
         sets: Array.from({ length: ex.sets }, () => ({
           movements: ex.movements.map((m) => ({
@@ -1447,6 +1564,7 @@ function initDraft(dayId) {
 
     const count = ex.sets || ex.defaultSets || 3;
     exercises[ex.id] = {
+      notes: '',
       sets: Array.from({ length: count }, () => ({
         reps: '',
         weight: '',
@@ -1469,7 +1587,32 @@ function ensureDraft(dayId) {
   if (!draft || draft.dayId !== dayId) {
     draft = startFreshWorkout(dayId);
   }
+  normalizeDraftNotes(draft, dayId);
   return draft;
+}
+
+function normalizeDraftNotes(draft, dayId) {
+  const day = getDay(dayId);
+  if (!day || !draft?.exercises) return;
+  day.exercises.forEach((ex) => {
+    const entry = draft.exercises[ex.id];
+    if (entry && entry.notes === undefined) entry.notes = '';
+  });
+}
+
+function renderExerciseNotes(exId, notes) {
+  return `
+    <div class="exercise-notes">
+      <label for="notes-${attrEscape(exId)}">Notes</label>
+      <textarea
+        id="notes-${attrEscape(exId)}"
+        data-field="notes"
+        data-ex-id="${attrEscape(exId)}"
+        rows="2"
+        placeholder="Form cues, weight changes, how it felt…"
+      >${escapeHtml(notes || '')}</textarea>
+    </div>
+  `;
 }
 
 function getPreviousSets(ex, dayId) {
@@ -1479,48 +1622,136 @@ function getPreviousSets(ex, dayId) {
   return ex.previous || [];
 }
 
+function getActiveDraft() {
+  return getDraft();
+}
+
+function hasActiveSession() {
+  const draft = getActiveDraft();
+  return draft?.dayId != null;
+}
+
+function openWorkoutDay(dayId) {
+  const existing = getActiveDraft();
+  if (existing && existing.dayId !== dayId) {
+    const current = getDay(existing.dayId);
+    const next = getDay(dayId);
+    const currentLabel = current ? `${current.name}: ${current.subtitle}` : 'another day';
+    const nextLabel = next ? `${next.name}: ${next.subtitle}` : 'this day';
+    if (
+      !confirm(
+        `You have an unsaved ${currentLabel} workout. Switch to ${nextLabel}? Your current progress will be discarded.`
+      )
+    ) {
+      return false;
+    }
+    startFreshWorkout(dayId);
+  } else if (!existing || existing.dayId !== dayId) {
+    startFreshWorkout(dayId);
+  }
+  state.dayId = dayId;
+  state.tab = 'workout';
+  return true;
+}
+
+function leaveSessionView() {
+  state.dayId = null;
+}
+
+function discardActiveSession() {
+  setDraft(null);
+  state.dayId = null;
+}
+
+function renderActiveSessionBanner(draft) {
+  if (!draft?.dayId) return '';
+  const day = getDay(draft.dayId);
+  if (!day) return '';
+  return `
+    <div class="active-session-banner">
+      <div class="banner-text">
+        <strong>${escapeHtml(day.name)}: ${escapeHtml(day.subtitle)} in progress</strong>
+        <span>Progress is saved until you tap Save or Discard</span>
+      </div>
+      <div class="banner-actions">
+        <button type="button" data-action="continue-session">Continue</button>
+        <button type="button" data-action="discard-session">Discard</button>
+      </div>
+    </div>
+  `;
+}
+
+function bindActiveSessionBanner() {
+  app.querySelector('[data-action="continue-session"]')?.addEventListener('click', () => {
+    const draft = getActiveDraft();
+    if (!draft?.dayId) return;
+    state.dayId = draft.dayId;
+    state.tab = 'workout';
+    render();
+  });
+
+  app.querySelector('[data-action="discard-session"]')?.addEventListener('click', () => {
+    const draft = getActiveDraft();
+    const day = draft ? getDay(draft.dayId) : null;
+    const label = day ? `${day.name}: ${day.subtitle}` : 'this workout';
+    if (confirm(`Discard your unsaved ${label} workout?`)) {
+      discardActiveSession();
+      render();
+    }
+  });
+}
+
 function render() {
-  bottomNav.style.display = state.dayId ? 'none' : 'flex';
+  bottomNav.style.display = 'flex';
 
   if (state.tab === 'history') {
     renderHistory();
+    updateNav();
     return;
   }
 
-  if (!state.dayId) {
-    renderHome();
+  if (state.dayId) {
+    renderSession(state.dayId);
+    updateNav();
     return;
   }
 
-  renderSession(state.dayId);
+  renderHome();
 }
 
 function renderHome() {
+  const draft = getActiveDraft();
+  const activeDayId = draft?.dayId ?? null;
+
   app.innerHTML = `
     <div class="home-body has-nav">
       <h1>My Workouts</h1>
       <p class="lead">4-day program · 2 min rest between sets</p>
+      ${renderActiveSessionBanner(draft)}
       <div class="day-list">
-        ${WORKOUT_DAYS.map(
-          (d) => `
-          <button type="button" class="day-pill" data-day-id="${d.id}">
+        ${WORKOUT_DAYS.map((d) => {
+          const inProgress = activeDayId === d.id;
+          return `
+          <button type="button" class="day-pill${inProgress ? ' in-progress' : ''}" data-day-id="${d.id}">
             <div>
               <strong>${escapeHtml(d.name)}: ${escapeHtml(d.subtitle)}</strong>
               <span>${d.exercises.length} exercises</span>
+              ${inProgress ? '<span class="day-status">In progress — tap to continue</span>' : ''}
             </div>
             <span class="chevron" aria-hidden="true">›</span>
           </button>
-        `
-        ).join('')}
+        `;
+        }).join('')}
       </div>
+      <p class="app-version">v${escapeHtml(APP_VERSION)}</p>
     </div>
   `;
 
+  bindActiveSessionBanner();
+
   app.querySelectorAll('.day-pill').forEach((btn) => {
     btn.addEventListener('click', () => {
-      state.dayId = Number(btn.dataset.dayId);
-      startFreshWorkout(state.dayId);
-      render();
+      if (openWorkoutDay(Number(btn.dataset.dayId))) render();
     });
   });
 
@@ -1533,13 +1764,12 @@ function renderSession(dayId) {
 
   app.innerHTML = `
     <header class="session-toolbar">
-      <button type="button" class="toolbar-btn" data-action="cancel">Cancel</button>
+      <button type="button" class="toolbar-btn" data-action="back">Back</button>
       <div class="toolbar-right">
-        <button type="button" class="icon-btn" data-action="history" title="History">🕐</button>
         <button type="button" class="toolbar-btn save-top" data-action="save">Save</button>
       </div>
     </header>
-    <div class="session-body">
+    <div class="session-body has-nav">
       ${day.exercises.map((ex) => renderExerciseCard(ex, dayId, draft)).join('')}
     </div>
     <footer class="session-footer">
@@ -1602,7 +1832,7 @@ function renderExerciseCard(ex, dayId, draft) {
         <thead><tr>${headerCols}</tr></thead>
         <tbody>${rows}</tbody>
       </table>
-      <button type="button" class="add-set-btn" data-action="add-set" data-ex-id="${ex.id}">＋ Add new set</button>
+      ${renderExerciseNotes(ex.id, draftEx.notes)}
     </article>
   `;
 }
@@ -1655,6 +1885,7 @@ function renderSupersetCard(ex, dayId, draft) {
       </div>
       ${renderRestBar(ex)}
       ${movementsHtml}
+      ${renderExerciseNotes(ex.id, draftEx.notes)}
     </article>
   `;
 }
@@ -1662,17 +1893,8 @@ function renderSupersetCard(ex, dayId, draft) {
 function bindSessionEvents(dayId, draft) {
   const day = getDay(dayId);
 
-  app.querySelector('[data-action="cancel"]')?.addEventListener('click', () => {
-    if (confirm('Leave workout? Unsaved sets will be discarded.')) {
-      setDraft(null);
-      state.dayId = null;
-      render();
-    }
-  });
-
-  app.querySelector('[data-action="history"]')?.addEventListener('click', () => {
-    state.tab = 'history';
-    state.dayId = null;
+  app.querySelector('[data-action="back"]')?.addEventListener('click', () => {
+    leaveSessionView();
     render();
   });
 
@@ -1689,17 +1911,6 @@ function bindSessionEvents(dayId, draft) {
       } else {
         startRestTimer(btn.dataset.exName, exId);
       }
-    });
-  });
-
-  app.querySelectorAll('[data-action="add-set"]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const exId = btn.dataset.exId;
-      const ex = findExercise(dayId, exId);
-      draft.exercises[exId].sets.push({ reps: '', weight: '' });
-      if (ex.previous) ex.previous.push({ display: '—' });
-      setDraft(draft);
-      renderSession(dayId);
     });
   });
 
@@ -1726,6 +1937,15 @@ function bindSessionEvents(dayId, draft) {
       setDraft(draft);
     });
   });
+
+  app.querySelectorAll('textarea[data-field="notes"]').forEach((textarea) => {
+    textarea.addEventListener('input', () => {
+      const exId = textarea.dataset.exId;
+      if (!draft.exercises[exId]) return;
+      draft.exercises[exId].notes = textarea.value;
+      setDraft(draft);
+    });
+  });
 }
 
 function findExercise(dayId, exId) {
@@ -1741,6 +1961,7 @@ function saveSession(dayId) {
     const d = draft.exercises[ex.id];
     if (ex.type === 'superset') {
       last[ex.id] = {
+        notes: d.notes || '',
         sets: d.sets.map((round, i) => ({
           movements: ex.movements.reduce((acc, mv) => {
             const m = round.movements.find((x) => x.id === mv.id);
@@ -1760,6 +1981,7 @@ function saveSession(dayId) {
 
     const unit = ex.weightUnit;
     last[ex.id] = {
+      notes: d.notes || '',
       sets: d.sets.map((row) => ({
         reps: row.reps,
         weight: row.weight,
@@ -1781,8 +2003,9 @@ function saveSession(dayId) {
   saveJson(HISTORY_KEY, history.slice(0, 50));
 
   setDraft(null);
-  alert('Workout saved!');
   state.dayId = null;
+  state.tab = 'workout';
+  alert('Workout saved!');
   render();
 }
 
@@ -1802,8 +2025,9 @@ function buildHistoryExercises(day, draft) {
               .filter((m) => m.reps),
           }))
           .filter((r) => r.movements.length);
-        if (!rounds.length) return null;
-        return { id: ex.id, name: ex.name, type: 'superset', rounds };
+        const notes = d.notes?.trim() || '';
+        if (!rounds.length && !notes) return null;
+        return { id: ex.id, name: ex.name, type: 'superset', rounds, notes };
       }
 
       const sets = d.sets
@@ -1814,12 +2038,14 @@ function buildHistoryExercises(day, draft) {
           display: buildDisplay(row.reps, row.weight, ex.weightUnit),
         }))
         .filter((s) => s.reps || s.weight);
-      if (!sets.length) return null;
+      const notes = d.notes?.trim() || '';
+      if (!sets.length && !notes) return null;
       return {
         id: ex.id,
         name: ex.name,
         weightUnit: ex.weightUnit,
         sets,
+        notes,
       };
     })
     .filter(Boolean);
@@ -1845,6 +2071,11 @@ function historyDateKey(iso) {
   return new Date(iso).toISOString().slice(0, 10);
 }
 
+function renderHistoryNotes(notes) {
+  if (!notes?.trim()) return '';
+  return `<p class="history-exercise-note">${escapeHtml(notes.trim())}</p>`;
+}
+
 function renderHistoryExercise(ex) {
   if (ex.type === 'superset') {
     const roundsHtml = ex.rounds
@@ -1862,7 +2093,8 @@ function renderHistoryExercise(ex) {
     return `
       <div class="history-exercise">
         <h4>${escapeHtml(ex.name)}</h4>
-        <ul class="history-rounds">${roundsHtml}</ul>
+        ${ex.rounds?.length ? `<ul class="history-rounds">${roundsHtml}</ul>` : ''}
+        ${renderHistoryNotes(ex.notes)}
       </div>
     `;
   }
@@ -1878,7 +2110,8 @@ function renderHistoryExercise(ex) {
   return `
     <div class="history-exercise">
       <h4>${escapeHtml(ex.name)}</h4>
-      <ul class="history-set-list">${setsHtml}</ul>
+      ${ex.sets?.length ? `<ul class="history-set-list">${setsHtml}</ul>` : ''}
+      ${renderHistoryNotes(ex.notes)}
     </div>
   `;
 }
@@ -2312,6 +2545,15 @@ function updateRestBars() {
 function renderHistory() {
   const history = loadJson(HISTORY_KEY, []);
   const grouped = groupHistoryByDate(history);
+  const draft = getActiveDraft();
+  const sessionNote = draft?.dayId
+    ? (() => {
+        const day = getDay(draft.dayId);
+        return day
+          ? `<p class="history-session-note">${escapeHtml(day.name)}: ${escapeHtml(day.subtitle)} is still in progress — switch to Workouts to continue.</p>`
+          : '';
+      })()
+    : '';
 
   const body = grouped.length
     ? grouped
@@ -2335,6 +2577,7 @@ function renderHistory() {
         <p class="history-page-lead">${history.length ? `${history.length} saved workout${history.length === 1 ? '' : 's'}` : 'Your completed workouts appear here'}</p>
       </header>
       ${renderProgressSection(history)}
+      ${sessionNote}
       ${body}
     </div>
   `;
@@ -2378,7 +2621,12 @@ function restoreRestTimerIfNeeded() {
 async function registerServiceWorker() {
   if (!('serviceWorker' in navigator)) return;
   try {
-    await navigator.serviceWorker.register('./sw.js', { scope: './' });
+    const reg = await navigator.serviceWorker.register(`./sw.js?v=${APP_VERSION}`, {
+      scope: './',
+      updateViaCache: 'none',
+    });
+    await reg.update();
+    if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
   } catch (e) {
     console.warn('Service worker registration failed', e);
   }
@@ -2395,7 +2643,7 @@ document.addEventListener(
 document.querySelectorAll('.bottom-nav button').forEach((btn) => {
   btn.addEventListener('click', () => {
     state.tab = btn.dataset.tab;
-    if (state.tab === 'workout') state.dayId = null;
+    leaveSessionView();
     render();
   });
 });

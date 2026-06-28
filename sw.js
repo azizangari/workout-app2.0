@@ -1,4 +1,4 @@
-/* Rest timer: fire notification + beep when the app is in the background. */
+/* Rest timer + always fetch fresh HTML when online. Version: 2025.06.27 */
 const REST_DONE_TAG = 'rest-done';
 const REST_TIMER_TAG = 'rest-timer';
 
@@ -45,6 +45,11 @@ self.addEventListener('message', (event) => {
     clearRestAlarm();
     closeTagged(REST_TIMER_TAG);
     closeTagged(REST_DONE_TAG);
+    return;
+  }
+
+  if (data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
   }
 });
 
@@ -54,4 +59,12 @@ self.addEventListener('install', (event) => {
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(self.clients.claim());
+});
+
+self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
+  const url = new URL(event.request.url);
+  if (url.pathname.endsWith('/index.html') || url.pathname.endsWith('/')) {
+    event.respondWith(fetch(event.request));
+  }
 });
