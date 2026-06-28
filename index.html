@@ -117,6 +117,39 @@ body {
   font-weight: 600;
 }
 
+.session-day-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.45rem 1rem;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.session-day-bar .session-day-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.clear-all-btn-sm {
+  flex-shrink: 0;
+  border: 1px solid #ffa39e;
+  border-radius: 6px;
+  padding: 0.22rem 0.55rem;
+  background: #fff1f0;
+  color: #cf1322;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
 /* Home */
 .home-body {
   padding: 1.25rem 1rem 2rem;
@@ -785,45 +818,6 @@ body {
   color: var(--muted);
 }
 
-.data-actions {
-  margin-top: 2rem;
-  padding-top: 1.25rem;
-  border-top: 1px solid var(--border);
-}
-
-.clear-all-warning {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.55rem;
-  margin: 0 0 0.75rem;
-  padding: 0.75rem 0.85rem;
-  border-radius: var(--radius);
-  background: #fff7e6;
-  border: 1px solid #ffd591;
-  font-size: 0.85rem;
-  color: #ad6800;
-  line-height: 1.45;
-}
-
-.clear-all-warning .warning-icon {
-  font-size: 1.15rem;
-  line-height: 1.2;
-  flex-shrink: 0;
-}
-
-.clear-all-btn {
-  width: 100%;
-  padding: 0.7rem 1rem;
-  border: 1px solid #ffa39e;
-  border-radius: var(--radius);
-  background: #fff1f0;
-  color: #cf1322;
-  font: inherit;
-  font-size: 0.95rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-
 .boot-screen {
   padding: 2rem 1.25rem;
   text-align: center;
@@ -939,7 +933,7 @@ function exerciseImageSrc(id) {
  */
 
 const REST_SECONDS = 120;
-const APP_VERSION = '2025.06.27-6';
+const APP_VERSION = '2025.06.27-7';
 
 const WORKOUT_DAYS = [
   {
@@ -1704,13 +1698,6 @@ function renderHome() {
           </button>
         `).join('')}
       </div>
-      <div class="data-actions">
-        <p class="clear-all-warning">
-          <span class="warning-icon" aria-hidden="true">⚠️</span>
-          <span>Clear all removes every in-progress workout, saved history entry, and previous set record from this device.</span>
-        </p>
-        <button type="button" class="clear-all-btn" data-action="clear-all">Clear all data</button>
-      </div>
       <p class="app-version">v${escapeHtml(APP_VERSION)}</p>
     </div>
   `;
@@ -1720,8 +1707,6 @@ function renderHome() {
       if (openWorkoutDay(Number(btn.dataset.dayId))) render();
     });
   });
-
-  app.querySelector('[data-action="clear-all"]')?.addEventListener('click', promptClearAllData);
 
   updateNav();
 }
@@ -1742,6 +1727,10 @@ function renderSession(dayId) {
         <button type="button" class="toolbar-btn save-top" data-action="save">Save</button>
       </div>
     </header>
+    <div class="session-day-bar">
+      <span class="session-day-title">${escapeHtml(day.name)}: ${escapeHtml(day.subtitle)}</span>
+      <button type="button" class="clear-all-btn-sm" data-action="clear-all" aria-label="Clear all workout data">⚠ Clear all</button>
+    </div>
     <div class="session-body has-nav">
       ${day.exercises.map((ex) => renderExerciseCard(ex, dayId, draft)).join('')}
     </div>
@@ -1882,6 +1871,8 @@ function bindSessionEvents(dayId, draft) {
       render();
     }
   });
+
+  app.querySelector('[data-action="clear-all"]')?.addEventListener('click', promptClearAllData);
 
   app.querySelectorAll('[data-action="save"]').forEach((btn) => {
     btn.addEventListener('click', () => saveSession(dayId));
