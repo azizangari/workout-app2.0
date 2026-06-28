@@ -500,16 +500,6 @@ body {
   color: var(--muted);
 }
 
-.history-session-note {
-  margin: 0 0 1rem;
-  padding: 0.75rem 1rem;
-  border-radius: var(--radius);
-  background: var(--blue-light);
-  font-size: 0.85rem;
-  color: var(--text);
-}
-
-.progress-panel {
   margin-bottom: 1.5rem;
   padding: 1rem;
   border-radius: var(--radius);
@@ -788,74 +778,6 @@ body {
   padding-bottom: 4.5rem;
 }
 
-.active-session-banner {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.65rem;
-  margin-bottom: 1rem;
-  padding: 0.85rem 1rem;
-  border-radius: var(--radius);
-  background: var(--blue-light);
-  border: 1px solid rgba(0, 122, 255, 0.15);
-}
-
-.active-session-banner .banner-text {
-  flex: 1 1 10rem;
-  min-width: 0;
-}
-
-.active-session-banner strong {
-  display: block;
-  font-size: 0.95rem;
-}
-
-.active-session-banner span {
-  display: block;
-  margin-top: 0.15rem;
-  font-size: 0.8rem;
-  color: var(--muted);
-}
-
-.active-session-banner .banner-actions {
-  display: flex;
-  gap: 0.5rem;
-  flex-shrink: 0;
-}
-
-.active-session-banner button {
-  padding: 0.45rem 0.85rem;
-  border: none;
-  border-radius: 8px;
-  font: inherit;
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.active-session-banner [data-action="continue-session"] {
-  background: var(--blue);
-  color: #fff;
-}
-
-.active-session-banner [data-action="discard-session"] {
-  background: var(--surface);
-  color: var(--muted);
-}
-
-.day-pill.in-progress {
-  outline: 2px solid var(--blue);
-  outline-offset: -2px;
-}
-
-.day-pill.in-progress .day-status {
-  display: block;
-  margin-top: 0.2rem;
-  font-size: 0.75rem;
-  color: var(--blue);
-  font-weight: 600;
-}
-
 .app-version {
   margin: 1.25rem 0 0;
   text-align: center;
@@ -978,7 +900,7 @@ function exerciseImageSrc(id) {
  */
 
 const REST_SECONDS = 120;
-const APP_VERSION = '2025.06.27-4';
+const APP_VERSION = '2025.06.27-5';
 
 const WORKOUT_DAYS = [
   {
@@ -1557,12 +1479,6 @@ function setDraftForDay(dayId, draft) {
   }
 }
 
-function getInProgressDayIds() {
-  return Object.keys(getAllDrafts())
-    .map(Number)
-    .filter((id) => getDay(id));
-}
-
 function formatPrevious(set, unit) {
   if (!set) return '—';
   if (set.display) return set.display;
@@ -1659,10 +1575,6 @@ function getPreviousSets(ex, dayId) {
   return ex.previous || [];
 }
 
-function hasActiveSession() {
-  return getInProgressDayIds().length > 0;
-}
-
 function openWorkoutDay(dayId) {
   ensureDraft(dayId);
   state.dayId = dayId;
@@ -1678,24 +1590,6 @@ function discardActiveSession(dayId) {
   const id = dayId ?? state.dayId;
   if (id != null) setDraftForDay(id, null);
   if (state.dayId === id) state.dayId = null;
-}
-
-function renderActiveSessionBanner() {
-  const ids = getInProgressDayIds();
-  if (!ids.length) return '';
-  const labels = ids.map((id) => {
-    const day = getDay(id);
-    return day ? `${day.name}: ${day.subtitle}` : `Day ${id}`;
-  });
-  return `
-    <div class="active-session-banner">
-      <div class="banner-text">
-        <strong>${ids.length === 1 ? '1 workout in progress' : `${ids.length} workouts in progress`}</strong>
-        <span>Tap a day below to switch · each day keeps its own progress until Save or Cancel</span>
-        <span class="banner-days">${labels.map(escapeHtml).join(' · ')}</span>
-      </div>
-    </div>
-  `;
 }
 
 function render() {
@@ -1717,27 +1611,20 @@ function render() {
 }
 
 function renderHome() {
-  const inProgressIds = new Set(getInProgressDayIds());
-
   app.innerHTML = `
     <div class="home-body has-nav">
       <h1>My Workouts</h1>
       <p class="lead">4-day program · 2 min rest between sets</p>
-      ${renderActiveSessionBanner()}
       <div class="day-list">
-        ${WORKOUT_DAYS.map((d) => {
-          const inProgress = inProgressIds.has(d.id);
-          return `
-          <button type="button" class="day-pill${inProgress ? ' in-progress' : ''}" data-day-id="${d.id}">
+        ${WORKOUT_DAYS.map((d) => `
+          <button type="button" class="day-pill" data-day-id="${d.id}">
             <div>
               <strong>${escapeHtml(d.name)}: ${escapeHtml(d.subtitle)}</strong>
               <span>${d.exercises.length} exercises</span>
-              ${inProgress ? '<span class="day-status">In progress — tap to continue</span>' : ''}
             </div>
             <span class="chevron" aria-hidden="true">›</span>
           </button>
-        `;
-        }).join('')}
+        `).join('')}
       </div>
       <p class="app-version">v${escapeHtml(APP_VERSION)}</p>
     </div>
@@ -2556,15 +2443,6 @@ function updateRestBars() {
 function renderHistory() {
   const history = loadJson(HISTORY_KEY, []);
   const grouped = groupHistoryByDate(history);
-  const inProgressIds = getInProgressDayIds();
-  const sessionNote = inProgressIds.length
-    ? `<p class="history-session-note">${inProgressIds
-        .map((id) => {
-          const day = getDay(id);
-          return day ? `${escapeHtml(day.name)}: ${escapeHtml(day.subtitle)}` : `Day ${id}`;
-        })
-        .join(' · ')} still in progress — switch to Workouts to continue.</p>`
-    : '';
 
   const body = grouped.length
     ? grouped
@@ -2588,7 +2466,6 @@ function renderHistory() {
         <p class="history-page-lead">${history.length ? `${history.length} saved workout${history.length === 1 ? '' : 's'}` : 'Your completed workouts appear here'}</p>
       </header>
       ${renderProgressSection(history)}
-      ${sessionNote}
       ${body}
     </div>
   `;
