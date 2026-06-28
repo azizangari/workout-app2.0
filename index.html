@@ -58,9 +58,9 @@ body {
   position: sticky;
   top: 0;
   z-index: 20;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
   padding: 0.65rem 1rem;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
@@ -83,13 +83,21 @@ body {
 .session-toolbar .toolbar-right {
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 0.75rem;
 }
 
 .session-toolbar .toolbar-left {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 0.85rem;
+}
+
+.session-toolbar .toolbar-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .session-toolbar .toolbar-btn.danger {
@@ -970,7 +978,7 @@ function exerciseImageSrc(id) {
  */
 
 const REST_SECONDS = 120;
-const APP_VERSION = '2025.06.27-3';
+const APP_VERSION = '2025.06.27-4';
 
 const WORKOUT_DAYS = [
   {
@@ -1752,6 +1760,8 @@ function renderSession(dayId) {
     <header class="session-toolbar">
       <div class="toolbar-left">
         <button type="button" class="toolbar-btn" data-action="back">Back</button>
+      </div>
+      <div class="toolbar-center">
         <button type="button" class="toolbar-btn danger" data-action="cancel">Cancel</button>
       </div>
       <div class="toolbar-right">
