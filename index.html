@@ -970,7 +970,7 @@ function exerciseImageSrc(id) {
  */
 
 const REST_SECONDS = 120;
-const APP_VERSION = '2025.06.27-2';
+const APP_VERSION = '2025.06.27-3';
 
 const WORKOUT_DAYS = [
   {
@@ -1521,17 +1521,38 @@ function setLastForDay(dayId, data) {
   saveJson(LAST_KEY, all);
 }
 
-function getDraft() {
-  return loadJson(DRAFT_KEY, null);
+function getAllDrafts() {
+  const raw = loadJson(DRAFT_KEY, null);
+  if (!raw) return {};
+  if (raw.exercises && typeof raw.dayId === 'number') {
+    const migrated = { [String(raw.dayId)]: raw };
+    saveJson(DRAFT_KEY, migrated);
+    return migrated;
+  }
+  return raw;
 }
 
-function setDraft(draft) {
+function getDraftForDay(dayId) {
+  return getAllDrafts()[String(dayId)] ?? null;
+}
+
+function setDraftForDay(dayId, draft) {
   try {
-    if (draft) saveJson(DRAFT_KEY, draft);
-    else localStorage.removeItem(DRAFT_KEY);
+    const all = getAllDrafts();
+    const key = String(dayId);
+    if (draft) all[key] = draft;
+    else delete all[key];
+    if (Object.keys(all).length === 0) localStorage.removeItem(DRAFT_KEY);
+    else saveJson(DRAFT_KEY, all);
   } catch {
     /* ignore */
   }
+}
+
+function getInProgressDayIds() {
+  return Object.keys(getAllDrafts())
+    .map(Number)
+    .filter((id) => getDay(id));
 }
 
 function formatPrevious(set, unit) {
@@ -1588,15 +1609,13 @@ function initDraft(dayId) {
 /** New session: empty inputs; Previous column still shows last saved workout. */
 function startFreshWorkout(dayId) {
   const draft = initDraft(dayId);
-  setDraft(draft);
+  setDraftForDay(dayId, draft);
   return draft;
 }
 
 function ensureDraft(dayId) {
-  let draft = getDraft();
-  if (!draft || draft.dayId !== dayId) {
-    draft = startFreshWorkout(dayId);
-  }
+  let draft = getDraftForDay(dayId);
+  if (!draft) draft = startFreshWorkout(dayId);
   normalizeDraftNotes(draft, dayId);
   return draft;
 }
@@ -1632,33 +1651,12 @@ function getPreviousSets(ex, dayId) {
   return ex.previous || [];
 }
 
-function getActiveDraft() {
-  return getDraft();
-}
-
 function hasActiveSession() {
-  const draft = getActiveDraft();
-  return draft?.dayId != null;
+  return getInProgressDayIds().length > 0;
 }
 
 function openWorkoutDay(dayId) {
-  const existing = getActiveDraft();
-  if (existing && existing.dayId !== dayId) {
-    const current = getDay(existing.dayId);
-    const next = getDay(dayId);
-    const currentLabel = current ? `${current.name}: ${current.subtitle}` : 'another day';
-    const nextLabel = next ? `${next.name}: ${next.subtitle}` : 'this day';
-    if (
-      !confirm(
-        `You have an unsaved ${currentLabel} workout. Switch to ${nextLabel}? Your current progress will be discarded.`
-      )
-    ) {
-      return false;
-    }
-    startFreshWorkout(dayId);
-  } else if (!existing || existing.dayId !== dayId) {
-    startFreshWorkout(dayId);
-  }
+  ensureDraft(dayId);
   state.dayId = dayId;
   state.tab = 'workout';
   return true;
@@ -1668,47 +1666,28 @@ function leaveSessionView() {
   state.dayId = null;
 }
 
-function discardActiveSession() {
-  setDraft(null);
-  state.dayId = null;
+function discardActiveSession(dayId) {
+  const id = dayId ?? state.dayId;
+  if (id != null) setDraftForDay(id, null);
+  if (state.dayId === id) state.dayId = null;
 }
 
-function renderActiveSessionBanner(draft) {
-  if (!draft?.dayId) return '';
-  const day = getDay(draft.dayId);
-  if (!day) return '';
+function renderActiveSessionBanner() {
+  const ids = getInProgressDayIds();
+  if (!ids.length) return '';
+  const labels = ids.map((id) => {
+    const day = getDay(id);
+    return day ? `${day.name}: ${day.subtitle}` : `Day ${id}`;
+  });
   return `
     <div class="active-session-banner">
       <div class="banner-text">
-        <strong>${escapeHtml(day.name)}: ${escapeHtml(day.subtitle)} in progress</strong>
-        <span>Progress is saved until you tap Save or Discard</span>
-      </div>
-      <div class="banner-actions">
-        <button type="button" data-action="continue-session">Continue</button>
-        <button type="button" data-action="discard-session">Discard</button>
+        <strong>${ids.length === 1 ? '1 workout in progress' : `${ids.length} workouts in progress`}</strong>
+        <span>Tap a day below to switch · each day keeps its own progress until Save or Cancel</span>
+        <span class="banner-days">${labels.map(escapeHtml).join(' · ')}</span>
       </div>
     </div>
   `;
-}
-
-function bindActiveSessionBanner() {
-  app.querySelector('[data-action="continue-session"]')?.addEventListener('click', () => {
-    const draft = getActiveDraft();
-    if (!draft?.dayId) return;
-    state.dayId = draft.dayId;
-    state.tab = 'workout';
-    render();
-  });
-
-  app.querySelector('[data-action="discard-session"]')?.addEventListener('click', () => {
-    const draft = getActiveDraft();
-    const day = draft ? getDay(draft.dayId) : null;
-    const label = day ? `${day.name}: ${day.subtitle}` : 'this workout';
-    if (confirm(`Discard your unsaved ${label} workout?`)) {
-      discardActiveSession();
-      render();
-    }
-  });
 }
 
 function render() {
@@ -1730,17 +1709,16 @@ function render() {
 }
 
 function renderHome() {
-  const draft = getActiveDraft();
-  const activeDayId = draft?.dayId ?? null;
+  const inProgressIds = new Set(getInProgressDayIds());
 
   app.innerHTML = `
     <div class="home-body has-nav">
       <h1>My Workouts</h1>
       <p class="lead">4-day program · 2 min rest between sets</p>
-      ${renderActiveSessionBanner(draft)}
+      ${renderActiveSessionBanner()}
       <div class="day-list">
         ${WORKOUT_DAYS.map((d) => {
-          const inProgress = activeDayId === d.id;
+          const inProgress = inProgressIds.has(d.id);
           return `
           <button type="button" class="day-pill${inProgress ? ' in-progress' : ''}" data-day-id="${d.id}">
             <div>
@@ -1756,8 +1734,6 @@ function renderHome() {
       <p class="app-version">v${escapeHtml(APP_VERSION)}</p>
     </div>
   `;
-
-  bindActiveSessionBanner();
 
   app.querySelectorAll('.day-pill').forEach((btn) => {
     btn.addEventListener('click', () => {
@@ -1918,7 +1894,7 @@ function bindSessionEvents(dayId, draft) {
         `Cancel ${label}?\n\nYou'll lose this workout — all unsaved sets and notes will be discarded.`
       )
     ) {
-      discardActiveSession();
+      discardActiveSession(dayId);
       render();
     }
   });
@@ -1959,7 +1935,7 @@ function bindSessionEvents(dayId, draft) {
       } else {
         draft.exercises[exId].sets[setIdx][field] = select.value;
       }
-      setDraft(draft);
+      setDraftForDay(dayId, draft);
     });
   });
 
@@ -1968,7 +1944,7 @@ function bindSessionEvents(dayId, draft) {
       const exId = textarea.dataset.exId;
       if (!draft.exercises[exId]) return;
       draft.exercises[exId].notes = textarea.value;
-      setDraft(draft);
+      setDraftForDay(dayId, draft);
     });
   });
 }
@@ -2027,7 +2003,7 @@ function saveSession(dayId) {
   });
   saveJson(HISTORY_KEY, history.slice(0, 50));
 
-  setDraft(null);
+  setDraftForDay(dayId, null);
   state.dayId = null;
   state.tab = 'workout';
   alert('Workout saved!');
@@ -2570,14 +2546,14 @@ function updateRestBars() {
 function renderHistory() {
   const history = loadJson(HISTORY_KEY, []);
   const grouped = groupHistoryByDate(history);
-  const draft = getActiveDraft();
-  const sessionNote = draft?.dayId
-    ? (() => {
-        const day = getDay(draft.dayId);
-        return day
-          ? `<p class="history-session-note">${escapeHtml(day.name)}: ${escapeHtml(day.subtitle)} is still in progress — switch to Workouts to continue.</p>`
-          : '';
-      })()
+  const inProgressIds = getInProgressDayIds();
+  const sessionNote = inProgressIds.length
+    ? `<p class="history-session-note">${inProgressIds
+        .map((id) => {
+          const day = getDay(id);
+          return day ? `${escapeHtml(day.name)}: ${escapeHtml(day.subtitle)}` : `Day ${id}`;
+        })
+        .join(' · ')} still in progress — switch to Workouts to continue.</p>`
     : '';
 
   const body = grouped.length
