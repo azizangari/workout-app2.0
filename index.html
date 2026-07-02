@@ -933,7 +933,7 @@ function exerciseImageSrc(id) {
  */
 
 const REST_SECONDS = 120;
-const APP_VERSION = '2025.06.27-8';
+const APP_VERSION = '2025.06.27-9';
 
 const WORKOUT_DAYS = [
   {
@@ -1855,7 +1855,7 @@ function bindSessionEvents(dayId, draft) {
   app.querySelector('[data-action="clear-all"]')?.addEventListener('click', () => promptClearWorkout(dayId));
 
   app.querySelectorAll('[data-action="save"]').forEach((btn) => {
-    btn.addEventListener('click', () => saveSession(dayId));
+    btn.addEventListener('click', () => promptSaveWorkout(dayId));
   });
 
   app.querySelectorAll('[data-action="start-rest"]').forEach((btn) => {
@@ -1906,6 +1906,15 @@ function bindSessionEvents(dayId, draft) {
 
 function findExercise(dayId, exId) {
   return getDay(dayId)?.exercises.find((e) => e.id === exId);
+}
+
+function promptSaveWorkout(dayId) {
+  const day = getDay(dayId);
+  const label = day ? `${day.name}: ${day.subtitle}` : 'this workout';
+  if (!confirm(`Save ${label}?\n\nYour entered sets and notes will be saved to history.`)) {
+    return;
+  }
+  saveSession(dayId);
 }
 
 function saveSession(dayId) {
