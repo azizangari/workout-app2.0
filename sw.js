@@ -1,4 +1,4 @@
-/* Rest timer + always fetch fresh HTML when online. Version: 2025.06.27-8 */
+/* Rest timer + always fetch fresh HTML when online. Version: 2025.06.27-9 */
 const REST_DONE_TAG = 'rest-done';
 const REST_TIMER_TAG = 'rest-timer';
 
