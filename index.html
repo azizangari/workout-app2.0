@@ -8,6 +8,9 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Workouts" />
     <meta name="mobile-web-app-capable" content="yes" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <title>Workout Tracker</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20512%20512%22%20role%3D%22img%22%20aria-label%3D%22Workout%22%3E%0A%20%20%3Crect%20width%3D%22512%22%20height%3D%22512%22%20rx%3D%2296%22%20fill%3D%22%23f5d547%22/%3E%0A%20%20%3Crect%20x%3D%2272%22%20y%3D%22200%22%20width%3D%2248%22%20height%3D%22160%22%20rx%3D%2224%22%20fill%3D%22%231c1c1e%22/%3E%0A%20%20%3Crect%20x%3D%22392%22%20y%3D%22200%22%20width%3D%2248%22%20height%3D%22160%22%20rx%3D%2224%22%20fill%3D%22%231c1c1e%22/%3E%0A%20%20%3Crect%20x%3D%22120%22%20y%3D%22232%22%20width%3D%22272%22%20height%3D%2232%22%20rx%3D%2216%22%20fill%3D%22%231c1c1e%22/%3E%0A%20%20%3Ccircle%20cx%3D%22256%22%20cy%3D%22248%22%20r%3D%2228%22%20fill%3D%22%23e6a800%22/%3E%0A%3C/svg%3E" type="image/svg+xml" />
     <link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQYyAAAAAXNSR0IArs4c6QAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAtKADAAQAAAABAAAAtAAAAAB1HbRDAAAPBElEQVR4Ae2dbYwdVRnHn5n7uq/tdru73e4WsQUpFSRAWz80TcWEFDQ1MWAMISZGSLARSfxCpJAQlIgxUVQwhQQMiR8IEeQDEUQSY639YEslgIU20Bfplt3tun3Z1/s+nmeW2d69nbt37syZc+fl/yQ39965M88553d+Ozv3zMy5miGCfA7DqJCRO06V3MdUyZ+mSmGEjOI4UXmWjMo8ET+o4nMtkN5fAjqR3kaaeFCig7TUAOnpYdIz60jPXkVadgNpmljH59D8EtooT1N5aj+VZw4Jb98Xvs743BSkDzQBvVN4fj0lOrdQons7aYkuX6orXejyzNtUOv+GEPkgid2wL5VG0pAT0FJC7K2U7LldPG+W2hgpQvMhRXn6ABUnXiQjf0JqBZEs2gS0zHpK9d1Fia5tUg5JPAtdnvuACqNPCZFPRps8WucrARY7PXg/Jdo3eSrHtdB8jFwYf47KF970VAFsDALVBBIrd1J64F7Xx9iuhDb3yiNPkFGaqK4LXoOAFAJaso/Sww+52ls3LXRx8hUqjj8vKo5hNim9hyR1COiUGriHUr131PncfrFjofmLX3FsrxjBeM0+E5aCgA8Ekj27KLVmt+MvjI6ENsTwW+HML8xxZR/qjJQgsCwBHrdODz0opE4tux5/2PDUDe+ZIXNDjljBRwJ8go4dZBcbRUOh+TCDEyJAoJUE2EF2sVEsKzR/AcQxcyOE+FwVAXaRnVwu6grNQ3MLoxnLbY7PQEAtAXaS3awXtkKbJ03EODOG5uphw/LWERDf6fgciDixZxe2QvMZQJw0scOFZUEgwG6yo3ZxmdC8O8fpbDtUWBYkAuyo3aHHEqHNIbrRp4NUb9QFBOoSKAhXa4fylgjNl4Di8s+6/PBBwAiwq+xsdSwRmq9nRoBAmAjUOrsoNN9pgr1zmLoSdWUC5l5auGvFotB82xQCBMJIoNpdU2jzhla+BxABAiEkwPevWuPSptDmtRq4oTWEXYkqmwSEu9b1RgtCi6kGECAQZgI8XQaHzuN45rwZYW4N6h57Auwwu6zzjEaYBCb2PoQfgJjIiF3WK7mPwt8YtAAEBAGeak6v5EcAAwQiQYDnTdR54kQECESBALusG4WxKLQFbQABc0ZbnSpzQAEC0SAgpmfWzfmZo9EctCLmBNhlsYfmycYRIBABAqbQmNIrAj2JJiwQECdWgAIEokQAQkepN9EW7KHhQLQIYA8drf6MfWsgdOwViBYACB2t/ox9ayB07BWIFgAIHa3+jH1rIHTsFYgWAAgdrf6MfWsgdOwViBYACB2t/ox9ayB07BWIFgAIHa3+jH1rIHTsFYgWAAgdrf6MfWsgdOwViBYACB2t/ox9ayB07BWIFgAIHa3+jH1rIHTsFYgWAAgdrf6MfWsgdOwViBYACB2t/ox9ayB07BWIFgAIHa3+jH1rIHTsFYgWAAgdrf6MfWsgdOwViBYACB2t/ox9ayB07BWIFgAIHa3+jH1rIHTsFYgWAAgdrf6MfWsgdOwViBaAZKuaMzNbpn2HZujdozmaOFei9qxG6wbTtGNrJ127IduqaqHcJgh8eDxH+w7O0OnRAs3lDOpblaQbNmZpx5ZO6uxINJFJ3qra7JGdhrx0jTMVChV69qVJ+v3LkyYEuy1u3NRGe+4boC9tbLP7GMtaTOC9o/P0s2fH6Z0P7H9BjXdO37uzl+77di+l02oPApQKfe5Cib7/6IjYK9uDqO6npPgDf+yBQbrztpXVi/G6xQRe/ssFevS3o1QqN67IDWKH9Mxjw7RqpboDAWV/Prxndiozo2JgDz85Sm8dmG5MDmsoIcB9wX3iRGauEO+4uM+571WFMqH5MMPJnrm24Xt+9SldnHawO6jdEO+lEuA+4L5oNrjPue9VhRKh+QsgHzO7iamZCr3wp3NuNsU2EglwH3BfuAnue3ZARSgRmkcz+Fuw23jjH1NuN8V2kgh46QPue3ZARSg5WuehOS9xcqRA0+IvvKtFQ0Fu6m5UylSaOUflufNUKebNFHoqQ4n2Hkp2riJNb82wlpu2MHvuAy/BDnz9Kyu8pHC0rRKhJ84VHVVmuZXOTpZCIbRRLlF+4gTlJz8hElJfHieJhMyZ3iso07eetISSLri8Gk0sYfZeQ4YDTuqghGa+4P5ww2pEoeg9h5XLr+fy/BTN/vcdMooN/iMJ0fMTJ6lwYZQ6PncjJdq6/aqSlLwy2MtwwEljlBxDO6lI2NcpzV2gmeP/aixzVUNZfN6Gt0XIIaBkDy2nqpeyFEsGHf7PHJ06U6Bc3t0370vZvL/KJIr01SuOUDbpoi5GhSaP/Zv+9skmypdT3ivjMUM2o9OVQ2m6+bp2SiU1j9nUbx46od/cP0WP7x0nGcd1snDv+dYkZde7P87MJotUmPiYnvhjr6wqec7T35ukR3YP0M7twT4cqm1oqA45Xnr9PD3w+JlAydy/okS7tszWcm36PefgXEEJ3mEwa2YepgiN0OOTRfrp78YCx3bHdfOUkECRc3CuoAUzZ/ZhCQldoaapf/3nNBWDswNbbPSWqxuMaCyu2fiFzFyNS3O2BjNn9mGJ0Ah97OTCyYmggR3skfdXJjOXTE5BZW/XxtAIXZAwlm0HwOuypESCMnN5bVf19sUQnAOw6iuxO6yU/jyvHWj9kJZdy87PykMoM5ddXd0uG+wPJnu79sjrDbvsEpdt39whMZu8VB+eTktLJjOXtEqJREFlb9fG0Ah98xfb6ZYvd9q1oaXL9h1pl1a+zFyyKsXMmX1YIjRCM9BfPjQUOKnfO5WmoyPe/yVzDs4VpGCZmXmYIlRnCjvadHrmJ+vMa2v//PcpOiUuacwpvL2nXse+eriffjx0hjSXZ4oNcd0V57hmfevvds+Km1qvHE6LSz27zbu367U5qMtDJbQFkW+T50eQIjeepfzZ466qlB3YQD9/5CpX22KjpQRCdcixtOrBepfp3yCub/5805XibXhbhBwCodxDy2m63CyaON7IrvmCuLZ5Bc2PHhOXkS5/GltLtVHb4DWUWjEgtyIxzwahJQvAgia7+qh4cYyKU2fNW7CM0sLtS1oybd6CleruFyKvEbdh4R+kZPwEoWUTFflY1HTPWvPB6Q3+1ieC9+IIfwlAaH/5mtkhsgLInxWB/3nqWKMkBQQgtALIKEIdAQitjjVKUkAAQiuAjCLUEYDQ6lijJAUEILQCyChCHQEIrY41SlJAAEIrgIwi1BGA0OpYoyQFBCC0AsgoQh0BCK2ONUpSQABCK4CMItQRgNDqWKMkBQQgtALIKEIdAQitjjVKUkAAQiuAjCLUEYDQ6lijJAUEILQCyChCHQEIrY41SlJAQInQ/EM0XiObwQ2mXhm63V4GexkOOKm/d9MclDKw2vu9uP293uePc1BVrGJDQAZ7GQ7YVO2yRUqE3ix+IsxLXLshQzyvHaI1BJg994GX8OqA07KVWLLtpg7q6Xb/29a7bvH/N6KdAovrel76gPueHVARSoTm46cf3L3aVXv49/Lu/kaPq22xkTwC3AfcF26C+z5Sx9AMgYE0O2F5SvD7zcNDymC46ay4bMNC/lr0BfdJM8F9rnKHpGQPzQB0XaMn9wzRrdu6HPHobNdp72Pr6KYQzR7vqGEhXoln8uc+4b5xEtzX3Ofc96pCmz2yc2HiNUUl8jxvr751kZ76wwR9evbyn0Tj+Qu/tqObfvTdPhpeE6wZ7RUhCnwxI2MFevKFCXp93xRVbH7efG1/kn74nT765q0rlM/np1xoq7dY7HeP5sRjnv53vkRtWZ3WrUnRtps7aNWKJv+vWUnxrJTAuYslOnB4lk6PFWk+V6HVPUm6YWObeGSVi2w1vGVCWxXAMwjIJODsYEhmicgFAj4SgNA+wkVq9QQgtHrmKNFHAhDaR7hIrZ4AhFbPHCX6SABC+wgXqdUTgNDqmaNEHwlAaB/hIrV6AhBaPXOU6CMBCO0jXKRWTwBCq2eOEn0kAKF9hIvU6glAaPXMUaKPBCC0j3CRWj0BCK2eOUr0kQCE9hEuUqsnAKHVM0eJPhKA0D7CRWr1BITQcFo9dpToDwFd2Ky3+ZMbWUFANQHhsq5BaNXYUZ5PBNhlnRJq5hzzqQ1ICwKXCAiXdS01cGkBXoFAiAmwy7qeHg5xE1B1ELhEgF3W9QyEvoQEr8JMQM+sE0Jnrw5zG1B3EFgkoGevEsfQ2Q1iKLpzcSFegEAoCQiH2WVd03ig4/pQtgGVBgGLADvMLpunCROdW6zleAaBUBKwHF4Quns7kYZfmQplT6LSprsJdliEKbSW6KJE51agAYFQEmB32WGOxSuTkj23h7IxqDQIVLu7KHSiczNpmfWgAwKhIsDOsrtWLArNC1J9d1nL8QwCoSBQ6+wSoRNd27CXDkU3opJMwNw7C2erY4nQPI6XHry/+nO8BoHAEmBX2dnqWPpOfJJo30SJlTur18FrEAgcAXaUXa2Ny4TmFdID95KW7KtdF+9BIBAE2E121C5sheYxvfTwQ2J924/t8mAZCCgiIA6LhZvWuHNtoXWN5d15auCe2vXxHgRaSoCdtDvUsCpVV2heIdV7ByV7dlnr4hkEWkqAXWQnl4tlheYNU2t2k3WefLlE+AwE/CTADrKLjaKh0OZQ3tCDkLoRSXzuGwGWOS0crB2isytQEz8ib9h9ULvMMCpUHNtLpfOv1X6E9yDgGwHzMEPsmZ3IzJVwLLRV4+LkK1Qcf168rViL8AwCPhDQzUGJRsfMtQU3LTQnKM99QIWRJ8goTdTmw3sQ8EzAHGcWQ3PLjWbUK8SV0JzMKE9TYfw5Kl94s15uLAeBpgnwGUDzxN5n1zc3m8C10FZB5t569Gky8iesRXgGgaYJ8IVGfG2Gm71ydWGeheZk/IWxPH2AihMvQuxqunjdkACLzJeAmld61lxo1HBjmxWkCF2dtzzzthgJeYPKMweF6cXqj/AaBBYIiPtX+bYpvtOk+uJ8GXikC21Vio+xy1P7hdiHqDz7vhgUmbE+wnMcCYh5M3iqAb47m8eV612L4RWNb0JXV4wPSYzccarkPqJKfoQqhRGx8x4XwyWzZFTmhezigWHAamQhfC3O0YnpbM3pmcUsoObEiTzXnJhqjmfn4klgnI4le2n8/wExLAF880UlzAAAAABJRU5ErkJggg==" />
@@ -933,7 +936,7 @@ function exerciseImageSrc(id) {
  */
 
 const REST_SECONDS = 120;
-const APP_VERSION = '2025.06.27-9';
+const APP_VERSION = '2025.06.27-10';
 
 const WORKOUT_DAYS = [
   {
@@ -2576,10 +2579,28 @@ function restoreRestTimerIfNeeded() {
 async function registerServiceWorker() {
   if (!('serviceWorker' in navigator)) return;
   try {
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (refreshing) return;
+      refreshing = true;
+      window.location.reload();
+    });
+
     const reg = await navigator.serviceWorker.register(`./sw.js?v=${APP_VERSION}`, {
       scope: './',
       updateViaCache: 'none',
     });
+
+    reg.addEventListener('updatefound', () => {
+      const worker = reg.installing;
+      if (!worker) return;
+      worker.addEventListener('statechange', () => {
+        if (worker.state === 'installed' && navigator.serviceWorker.controller) {
+          worker.postMessage({ type: 'SKIP_WAITING' });
+        }
+      });
+    });
+
     await reg.update();
     if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
   } catch (e) {
