@@ -495,40 +495,6 @@ body {
   color: var(--muted);
 }
 
-/* Bottom save */
-.session-footer {
-  position: fixed;
-  bottom: calc(3.35rem + env(safe-area-inset-bottom));
-  left: 0;
-  right: 0;
-  z-index: 30;
-  display: flex;
-  justify-content: center;
-  padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom));
-  background: linear-gradient(transparent, var(--bg) 20%);
-  pointer-events: none;
-}
-
-.session-footer .save-main {
-  pointer-events: auto;
-  width: 100%;
-  max-width: 280px;
-  padding: 0.95rem 1.5rem;
-  border: none;
-  border-radius: 999px;
-  background: var(--yellow);
-  color: var(--yellow-text);
-  font: inherit;
-  font-size: 1.1rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
-}
-
-.session-footer .save-main:active {
-  transform: scale(0.98);
-}
-
 .history-page {
   padding: 1rem 1rem 2rem;
 }
@@ -2093,7 +2059,7 @@ function buildHistoryExercises(day, draft) {
       return {
         id: ex.id,
         name: ex.name,
-        weightUnit: ex.weightUnit,
+        weightUnit: d.weightUnit === 'lbs' ? 'lbs' : 'kg',
         sets,
         notes,
       };
