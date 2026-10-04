@@ -1,5 +1,5 @@
-/* Rest timer + always fetch fresh HTML when online. Version: 2026.10.04-6 */
-const SW_VERSION = '2026.10.04-6';
+/* Rest timer + always fetch fresh HTML when online. Version: 2026.10.04-7 */
+const SW_VERSION = '2026.10.04-7';
 const REST_DONE_TAG = 'rest-done';
 const REST_TIMER_TAG = 'rest-timer';
 
