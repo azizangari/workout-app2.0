@@ -313,6 +313,14 @@ body {
   width: 5.5rem;
 }
 
+.set-table th.col-kg select[data-field="weight-unit"] {
+  max-width: 3.5rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: lowercase;
+  padding: 0.35rem 0.15rem;
+}
+
 .set-table td {
   padding: 0.3rem 0.25rem;
   vertical-align: middle;
@@ -953,7 +961,7 @@ function exerciseImageSrc(id) {
  */
 
 const REST_SECONDS = 120;
-const APP_VERSION = '2026.10.04-5';
+const APP_VERSION = '2026.10.04-6';
 
 const WORKOUT_DAYS = [
   {
@@ -1448,6 +1456,16 @@ function repsSelect(value, ariaLabel) {
   return `<select data-field="reps" aria-label="${attrEscape(ariaLabel)}">${buildSelectOptions(1, REPS_MAX, value)}</select>`;
 }
 
+function weightUnitSelect(unit, exId) {
+  const u = unit === 'lbs' ? 'lbs' : 'kg';
+  return `
+    <select data-field="weight-unit" data-ex-id="${attrEscape(exId)}" aria-label="Weight unit">
+      <option value="kg"${u === 'kg' ? ' selected' : ''}>kg</option>
+      <option value="lbs"${u === 'lbs' ? ' selected' : ''}>lbs</option>
+    </select>
+  `;
+}
+
 function weightSelects(whole, frac, ariaLabel) {
   const fracSel = frac || '0';
   const fracOptions = WEIGHT_FRAC_OPTIONS.map(
@@ -1607,8 +1625,11 @@ function initDraft(dayId) {
     }
 
     const count = ex.sets || ex.defaultSets || 3;
+    const lastEntry = getLastForDay(dayId)[ex.id];
+    const defaultUnit = ex.weightUnit === 'lbs' ? 'lbs' : 'kg';
     exercises[ex.id] = {
       notes,
+      weightUnit: lastEntry?.weightUnit === 'lbs' ? 'lbs' : lastEntry?.weightUnit === 'kg' ? 'kg' : defaultUnit,
       sets: Array.from({ length: count }, () => ({
         reps: '',
         weight: '',
@@ -1640,6 +1661,9 @@ function normalizeDraftNotes(draft, dayId) {
     const entry = draft.exercises[ex.id];
     if (!entry) return;
     if (entry.notes === undefined) entry.notes = getExerciseNotes(dayId, ex.id);
+    if (ex.weightUnit != null && entry.weightUnit == null) {
+      entry.weightUnit = ex.weightUnit === 'lbs' ? 'lbs' : 'kg';
+    }
   });
 }
 
@@ -1775,9 +1799,8 @@ function renderExerciseCard(ex, dayId, draft) {
   const prevSets = getPreviousSets(ex, dayId);
   const draftEx = draft.exercises[ex.id];
   const setCount = draftEx?.sets?.length || ex.sets;
-  const unit = ex.weightUnit;
-  const hasWeight = unit !== null && unit !== undefined;
-  const weightLabel = unit === 'lbs' ? 'LBS' : 'KG';
+  const hasWeight = ex.weightUnit !== null && ex.weightUnit !== undefined;
+  const unit = draftEx.weightUnit === 'lbs' ? 'lbs' : 'kg';
 
   const rows = draftEx.sets
     .map((row, i) => {
@@ -1791,7 +1814,7 @@ function renderExerciseCard(ex, dayId, draft) {
             hasWeight
               ? `
             <td>${repsSelect(row.reps, `Set ${i + 1} reps`)}</td>
-            <td>${weightSelects(whole, frac, `Set ${i + 1} ${weightLabel}`)}</td>
+            <td>${weightSelects(whole, frac, `Set ${i + 1} weight`)}</td>
           `
               : `
             <td colspan="2">${repsSelect(row.reps, `Set ${i + 1} reps`)}</td>
@@ -1803,7 +1826,7 @@ function renderExerciseCard(ex, dayId, draft) {
     .join('');
 
   const headerCols = hasWeight
-    ? `<th>Set</th><th>Previous</th><th class="col-reps">Reps</th><th class="col-kg">${weightLabel}</th>`
+    ? `<th>Set</th><th>Previous</th><th class="col-reps">Reps</th><th class="col-kg">${weightUnitSelect(unit, ex.id)}</th>`
     : `<th>Set</th><th>Previous</th><th class="col-reps" colspan="2">Reps</th>`;
 
   return `
@@ -1916,7 +1939,18 @@ function bindSessionEvents(dayId, draft) {
     });
   });
 
+  app.querySelectorAll('select[data-field="weight-unit"]').forEach((select) => {
+    select.addEventListener('change', () => {
+      const exId = select.dataset.exId;
+      if (!draft.exercises[exId]) return;
+      draft.exercises[exId].weightUnit = select.value === 'lbs' ? 'lbs' : 'kg';
+      setDraftForDay(dayId, draft);
+      renderSession(dayId);
+    });
+  });
+
   app.querySelectorAll('select[data-field]').forEach((select) => {
+    if (select.dataset.field === 'weight-unit') return;
     select.addEventListener('change', () => {
       const tr = select.closest('tr');
       const exId = tr.dataset.ex;
@@ -1994,9 +2028,10 @@ function saveSession(dayId) {
       return;
     }
 
-    const unit = ex.weightUnit;
+    const unit = d.weightUnit === 'lbs' ? 'lbs' : 'kg';
     last[ex.id] = {
       notes: d.notes || '',
+      weightUnit: unit,
       sets: d.sets.map((row) => ({
         reps: row.reps,
         weight: row.weight,
