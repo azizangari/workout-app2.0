@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Workout">
+  <rect width="512" height="512" rx="96" fill="#f5d547"/>
+  <rect x="72" y="200" width="48" height="160" rx="24" fill="#1c1c1e"/>
+  <rect x="392" y="200" width="48" height="160" rx="24" fill="#1c1c1e"/>
+  <rect x="120" y="232" width="272" height="32" rx="16" fill="#1c1c1e"/>
+  <circle cx="256" cy="248" r="28" fill="#e6a800"/>
+</svg>
