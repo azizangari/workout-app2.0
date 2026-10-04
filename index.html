@@ -949,7 +949,7 @@ function exerciseImageSrc(id) {
  */
 
 const REST_SECONDS = 120;
-const APP_VERSION = '2026.10.04-1';
+const APP_VERSION = '2026.10.04-2';
 
 const WORKOUT_DAYS = [
   {
@@ -1683,6 +1683,7 @@ function renderHome() {
         `).join('')}
       </div>
       <p class="app-version">v${escapeHtml(APP_VERSION)}</p>
+      <button type="button" class="force-update-btn" data-action="force-update">Not seeing the latest? Tap to update</button>
     </div>
   `;
 
@@ -1691,6 +1692,8 @@ function renderHome() {
       if (openWorkoutDay(Number(btn.dataset.dayId))) render();
     });
   });
+
+  app.querySelector('[data-action="force-update"]')?.addEventListener('click', forceAppUpdate);
 
   updateNav();
 }
@@ -2575,6 +2578,25 @@ function restoreRestTimerIfNeeded() {
     return;
   }
   startRestTimer(saved.exerciseName || 'Rest', saved.exerciseId, { endAt: saved.endAt });
+}
+
+async function forceAppUpdate() {
+  try {
+    if ('serviceWorker' in navigator) {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map((reg) => reg.unregister()));
+    }
+    if ('caches' in window) {
+      const keys = await caches.keys();
+      await Promise.all(keys.map((key) => caches.delete(key)));
+    }
+  } catch (e) {
+    console.warn('Force update cleanup failed', e);
+  }
+  const url = new URL(window.location.href);
+  url.searchParams.set('v', APP_VERSION);
+  url.hash = '';
+  window.location.replace(url.toString());
 }
 
 async function registerServiceWorker() {
