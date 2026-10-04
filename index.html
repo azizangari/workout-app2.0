@@ -380,10 +380,6 @@ body {
 }
 
 /* Superset */
-  margin-top: 0.75rem;
-  padding-top: 0.75rem;
-  border-top: 1px solid var(--border);
-}
 
 .exercise-notes {
   margin-top: 0.65rem;
@@ -1492,13 +1488,40 @@ function promptClearWorkout(dayId) {
   const label = day ? `${day.name}: ${day.subtitle}` : 'this workout';
   if (
     !confirm(
-      `⚠️ WARNING\n\nClear all entered reps, weights, and notes for ${label}?`
+      `⚠️ WARNING\n\nClear all entered reps and weights for ${label}?\n\nYour notes will be kept.`
     )
   ) {
     return;
   }
   clearWorkoutEntries(dayId);
   render();
+}
+
+function getAllNotes() {
+  return loadJson(NOTES_KEY, {});
+}
+
+function getExerciseNotes(dayId, exId) {
+  const saved = getAllNotes()[String(dayId)]?.[exId];
+  if (saved !== undefined) return saved;
+  const fromLast = getLastForDay(dayId)[exId]?.notes;
+  if (fromLast) {
+    setExerciseNotes(dayId, exId, fromLast);
+    return fromLast;
+  }
+  return '';
+}
+
+function setExerciseNotes(dayId, exId, text) {
+  const all = getAllNotes();
+  const dayKey = String(dayId);
+  if (!all[dayKey]) all[dayKey] = {};
+  const value = text ?? '';
+  if (value) all[dayKey][exId] = value;
+  else delete all[dayKey][exId];
+  if (Object.keys(all[dayKey]).length === 0) delete all[dayKey];
+  if (Object.keys(all).length === 0) localStorage.removeItem(NOTES_KEY);
+  else saveJson(NOTES_KEY, all);
 }
 
 function getDay(id) {
@@ -1567,10 +1590,11 @@ function initDraft(dayId) {
   const exercises = {};
 
   day.exercises.forEach((ex) => {
+    const notes = getExerciseNotes(dayId, ex.id);
     if (ex.type === 'superset') {
       exercises[ex.id] = {
         type: 'superset',
-        notes: '',
+        notes,
         rounds: ex.sets,
         sets: Array.from({ length: ex.sets }, () => ({
           movements: ex.movements.map((m) => ({
@@ -1584,7 +1608,7 @@ function initDraft(dayId) {
 
     const count = ex.sets || ex.defaultSets || 3;
     exercises[ex.id] = {
-      notes: '',
+      notes,
       sets: Array.from({ length: count }, () => ({
         reps: '',
         weight: '',
@@ -1614,8 +1638,14 @@ function normalizeDraftNotes(draft, dayId) {
   if (!day || !draft?.exercises) return;
   day.exercises.forEach((ex) => {
     const entry = draft.exercises[ex.id];
-    if (entry && entry.notes === undefined) entry.notes = '';
+    if (!entry) return;
+    if (entry.notes === undefined) entry.notes = getExerciseNotes(dayId, ex.id);
   });
+}
+
+function autoResizeNotes(textarea) {
+  textarea.style.height = 'auto';
+  textarea.style.height = `${textarea.scrollHeight}px`;
 }
 
 function renderExerciseNotes(exId, notes) {
@@ -1626,8 +1656,8 @@ function renderExerciseNotes(exId, notes) {
         id="notes-${attrEscape(exId)}"
         data-field="notes"
         data-ex-id="${attrEscape(exId)}"
-        rows="2"
-        placeholder="Form cues, weight changes, how it felt…"
+        rows="1"
+        placeholder="Add notes anytime — they stay here for next time…"
       >${escapeHtml(notes || '')}</textarea>
     </div>
   `;
@@ -1911,11 +1941,14 @@ function bindSessionEvents(dayId, draft) {
   });
 
   app.querySelectorAll('textarea[data-field="notes"]').forEach((textarea) => {
+    autoResizeNotes(textarea);
     textarea.addEventListener('input', () => {
       const exId = textarea.dataset.exId;
       if (!draft.exercises[exId]) return;
       draft.exercises[exId].notes = textarea.value;
+      setExerciseNotes(dayId, exId, textarea.value);
       setDraftForDay(dayId, draft);
+      autoResizeNotes(textarea);
     });
   });
 }
@@ -1927,7 +1960,7 @@ function findExercise(dayId, exId) {
 function promptSaveWorkout(dayId) {
   const day = getDay(dayId);
   const label = day ? `${day.name}: ${day.subtitle}` : 'this workout';
-  if (!confirm(`Save ${label}?\n\nYour entered sets and notes will be saved to history.`)) {
+  if (!confirm(`Save ${label}?\n\nYour sets will be saved to history. Notes stay on each exercise for next time.`)) {
     return;
   }
   saveSession(dayId);
@@ -1940,6 +1973,7 @@ function saveSession(dayId) {
 
   day.exercises.forEach((ex) => {
     const d = draft.exercises[ex.id];
+    setExerciseNotes(dayId, ex.id, d.notes || '');
     if (ex.type === 'superset') {
       last[ex.id] = {
         notes: d.notes || '',
