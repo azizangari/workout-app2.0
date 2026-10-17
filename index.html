@@ -937,7 +937,7 @@ const EXERCISE_IMAGES = {
     'https://upload.wikimedia.org/wikipedia/commons/9/94/Push-ups.gif',
   'd1-machine-chest-press': `${WGER}/129/b263c968-e067-4750-916a-d8758a7df23e.webp`,
   'd1-lateral-raise': `${WGER}/1654/aa724a58-b3b5-4522-b278-1155416236a5.jpg`,
-  'd1-leg-extension': `${WGER}/369/78c915d1-e46d-4d30-8124-65d68664c3ef.png`,
+  'd1-tricep-machine': `${WGER}/84/Triceps-pushdown-1.png`,
   'd1-tricep-overhead-cable': `${WGER}/1519/fab7f641-27d4-40b5-8edd-1a0a137bfd94.gif`,
   'd1-pec-fly': `${WGER}/926/ae9deb5d-a1e9-4c30-b1e3-c128ba5d4969.png`,
   'd1-ab-circuit': `${WGER}/1648/63ae02d6-6dd9-4e9e-84da-d4905e78a33c.jpg`,
@@ -971,8 +971,8 @@ const EXERCISE_IMAGES = {
   'd4-seated-row': `${WGER}/394/5e0c015f-9e4c-4034-beea-b0afbf15d0bd.png`,
   'd4-leg-press': `${WGER}/371/d2136f96-3a43-4d4c-9944-1919c4ca1ce1.webp`,
   'd4-leg-curl': `${WGER}/117/seated-leg-curl-large-1.png`,
-  'd4-glute-kickback': `${WGER}/1131/3bcf3024-2dcc-4995-9694-55aa2c2e4a9a.png`,
   'd4-hip-abduction': `${WGER}/1748/923a3ff7-c269-49bd-9f03-697151a40f06.jpg`,
+  'd4-preacher-curl': `${WGER}/129/Standing-biceps-curl-1.png`,
   'd4-hammer-curl': `${WGER}/1567/0a8c155c-a48e-47e8-9df3-e39f025c6cad.png`,
 };
 
@@ -1004,7 +1004,7 @@ function exerciseImageSrc(id) {
  */
 
 const REST_SECONDS = 120;
-const APP_VERSION = '2026.10.17-3';
+const APP_VERSION = '2026.10.18-1';
 
 const WORKOUT_DAYS = [
   {
@@ -1038,11 +1038,11 @@ const WORKOUT_DAYS = [
         { target: '3 × 10–15' }
       ),
       ex(
-        'd1-leg-extension',
-        'Leg extension',
-        'Extend knees fully, pause briefly, and lower with control.',
+        'd1-tricep-machine',
+        'Seated triceps machine pushdown',
+        'Sit with upper arms braced. Extend elbows fully against the pad, then control the return.',
         3,
-        { target: '3 × 10–15' }
+        { target: '3 × 8–12' }
       ),
       ex(
         'd1-tricep-overhead-cable',
@@ -1254,18 +1254,18 @@ const WORKOUT_DAYS = [
         { target: '3 × 10–15' }
       ),
       ex(
-        'd4-glute-kickback',
-        'Glute kickback machine',
-        'Kick leg back against pad. Squeeze glute at top, control the return.',
-        3,
-        { target: '3 × 12–15' }
-      ),
-      ex(
         'd4-hip-abduction',
         'Hip abduction machine',
         'Push legs apart against pads. Control the return, avoid leaning.',
         3,
         { target: '3 × 15–20' }
+      ),
+      ex(
+        'd4-preacher-curl',
+        'Preacher curl',
+        'Upper arms flat on the pad. Curl without lifting elbows, control the lowering phase.',
+        3,
+        { target: '3 × 8–12' }
       ),
       ex(
         'd4-hammer-curl',
