@@ -385,6 +385,36 @@ body {
   padding-right: 0.9rem;
 }
 
+.copy-weight-btn {
+  flex-shrink: 0;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 0.35rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #f0f4ff;
+  color: var(--blue);
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.copy-weight-btn:hover,
+.copy-weight-btn:focus {
+  outline: none;
+  border-color: var(--blue);
+  background: #e4ecff;
+}
+
+.copy-weight-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+  background: #fafafa;
+  color: var(--muted);
+}
+
 .set-table tr.done td.set-num {
   color: var(--blue);
   font-weight: 600;
@@ -927,9 +957,10 @@ const EXERCISE_IMAGES = {
   // Day 3 — Push B
   'd3-hack-squat': `${WGER}/130/Narrow-stance-hack-squats-1-1024x721.png`,
   'd3-incline-press': `${WGER}/925/67dbb1c9-b378-46f9-adb6-1f55b3d3007a.png`,
-  'd3-db-bench': `${WGER}/97/Dumbbell-bench-press-1.png`,
+  'd3-bar-bench': `${WGER}/192/Bench-press-1.png`,
   'd3-db-shoulder': `${WGER}/478/70a2d72c-a822-45f3-8de2-54ea85951b84.jpg`,
   'd3-lateral-raise': `${WGER}/1654/aa724a58-b3b5-4522-b278-1155416236a5.jpg`,
+  'd3-tricep-pulldown': `${WGER}/84/Triceps-pushdown-1.png`,
   'd3-hanging-leg-raise': `${WGER}/979/27097a3a-5749-428d-b94c-6082afe390f6.png`,
   'd3-calf-raise': `${WGER}/1243/53d4fabe-c994-4907-873f-8d82813a9832.png`,
 
@@ -971,7 +1002,7 @@ function exerciseImageSrc(id) {
  */
 
 const REST_SECONDS = 120;
-const APP_VERSION = '2026.10.04-8';
+const APP_VERSION = '2026.10.17-1';
 
 const WORKOUT_DAYS = [
   {
@@ -1140,9 +1171,9 @@ const WORKOUT_DAYS = [
         { target: '3 × 6–10' }
       ),
       ex(
-        'd3-db-bench',
-        'Dumbbell bench press',
-        'Press dumbbells from chest level. Control the descent, press up explosively.',
+        'd3-bar-bench',
+        'Barbell bench press',
+        'Lie on a flat bench, lower the bar to mid-chest with control, then press up until arms lock out.',
         3,
         { target: '3 × 8–12' }
       ),
@@ -1159,6 +1190,13 @@ const WORKOUT_DAYS = [
         'Raise to shoulder height. Control the lowering phase.',
         3,
         { target: '3 × 12–20' }
+      ),
+      ex(
+        'd3-tricep-pulldown',
+        'Tricep cable pulldown',
+        'Keep elbows pinned at your sides. Push the cable down until arms straighten, then control the return.',
+        3,
+        { target: '3 × 10–15' }
       ),
       {
         id: 'd3-hanging-leg-raise',
@@ -1476,16 +1514,21 @@ function weightUnitSelect(unit, exId) {
   `;
 }
 
-function weightSelects(whole, frac, ariaLabel) {
+function weightSelects(whole, frac, ariaLabel, copyFromSet = null) {
   const fracSel = frac || '0';
   const fracOptions = WEIGHT_FRAC_OPTIONS.map(
     (f) =>
       `<option value="${f}"${fracSel === f ? ' selected' : ''}>.${f.replace('0.', '') || '0'}</option>`
   ).join('');
+  const copyBtn =
+    copyFromSet == null
+      ? ''
+      : `<button type="button" class="copy-weight-btn" data-action="copy-weight" data-from-set="${copyFromSet}" title="Match previous set weight" aria-label="Match previous set weight">=</button>`;
   return `
     <div class="weight-input">
       <select data-field="weight" aria-label="${attrEscape(ariaLabel)}">${buildSelectOptions(0, WEIGHT_WHOLE_MAX, whole)}</select>
       <select data-field="weight-frac" aria-label="${attrEscape(ariaLabel)} fraction">${fracOptions}</select>
+      ${copyBtn}
     </div>
   `;
 }
@@ -1820,6 +1863,8 @@ function renderHome() {
 
   app.querySelector('[data-action="force-update"]')?.addEventListener('click', forceAppUpdate);
 
+  bindInstallApp();
+
   updateNav();
 }
 
@@ -1873,7 +1918,7 @@ function renderExerciseCard(ex, dayId, draft) {
             hasWeight
               ? `
             <td>${repsSelect(row.reps, `Set ${i + 1} reps`)}</td>
-            <td>${weightSelects(whole, frac, `Set ${i + 1} weight`)}</td>
+            <td>${weightSelects(whole, frac, `Set ${i + 1} weight`, i > 0 ? i - 1 : null)}</td>
           `
               : `
             <td colspan="2">${repsSelect(row.reps, `Set ${i + 1} reps`)}</td>
@@ -2003,6 +2048,22 @@ function bindSessionEvents(dayId, draft) {
       const exId = select.dataset.exId;
       if (!draft.exercises[exId]) return;
       draft.exercises[exId].weightUnit = select.value === 'lbs' ? 'lbs' : 'kg';
+      setDraftForDay(dayId, draft);
+      renderSession(dayId);
+    });
+  });
+
+  app.querySelectorAll('[data-action="copy-weight"]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const tr = btn.closest('tr');
+      const exId = tr?.dataset.ex;
+      const setIdx = Number(tr?.dataset.set);
+      const fromIdx = Number(btn.dataset.fromSet);
+      const entry = draft.exercises[exId];
+      if (!entry?.sets?.[setIdx] || !entry.sets[fromIdx]) return;
+      const prevWeight = entry.sets[fromIdx].weight;
+      if (!prevWeight) return;
+      entry.sets[setIdx].weight = prevWeight;
       setDraftForDay(dayId, draft);
       renderSession(dayId);
     });
