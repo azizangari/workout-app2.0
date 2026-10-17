@@ -1004,7 +1004,7 @@ function exerciseImageSrc(id) {
  */
 
 const REST_SECONDS = 120;
-const APP_VERSION = '2026.10.17-2';
+const APP_VERSION = '2026.10.17-3';
 
 const WORKOUT_DAYS = [
   {
@@ -1709,21 +1709,31 @@ function startFreshWorkout(dayId) {
 function ensureDraft(dayId) {
   let draft = getDraftForDay(dayId);
   if (!draft) draft = startFreshWorkout(dayId);
-  normalizeDraftNotes(draft, dayId);
+  normalizeDraft(draft, dayId);
   return draft;
 }
 
-function normalizeDraftNotes(draft, dayId) {
+function normalizeDraft(draft, dayId) {
   const day = getDay(dayId);
   if (!day || !draft?.exercises) return;
+
+  // Fill in any exercises added/renamed since this draft was created
+  const fresh = initDraft(dayId);
   day.exercises.forEach((ex) => {
+    if (!draft.exercises[ex.id]) {
+      draft.exercises[ex.id] = fresh.exercises[ex.id];
+      return;
+    }
     const entry = draft.exercises[ex.id];
-    if (!entry) return;
     if (entry.notes === undefined) entry.notes = getExerciseNotes(dayId, ex.id);
     if (ex.weightUnit != null && entry.weightUnit == null) {
       entry.weightUnit = ex.weightUnit === 'lbs' ? 'lbs' : 'kg';
     }
+    if (!Array.isArray(entry.sets) || !entry.sets.length) {
+      entry.sets = fresh.exercises[ex.id].sets;
+    }
   });
+  setDraftForDay(dayId, draft);
 }
 
 function autoResizeNotes(textarea) {
@@ -1908,7 +1918,8 @@ function renderExerciseCard(ex, dayId, draft) {
 
   const prevSets = getPreviousSets(ex, dayId);
   const draftEx = draft.exercises[ex.id];
-  const setCount = draftEx?.sets?.length || ex.sets;
+  if (!draftEx?.sets) return '';
+  const setCount = draftEx.sets.length || ex.sets;
   const hasWeight = ex.weightUnit !== null && ex.weightUnit !== undefined;
   const unit = draftEx.weightUnit === 'lbs' ? 'lbs' : 'kg';
 
