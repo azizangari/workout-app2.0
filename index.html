@@ -385,18 +385,27 @@ body {
   padding-right: 0.9rem;
 }
 
+.col-kg-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
 .copy-weight-btn {
-  flex-shrink: 0;
-  min-width: 2rem;
-  height: 2rem;
-  padding: 0 0.35rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.25rem;
+  height: 1.55rem;
+  padding: 0 0.45rem;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 7px;
   background: #f0f4ff;
   color: var(--blue);
   font: inherit;
-  font-size: 0.7rem;
-  font-weight: 600;
+  font-size: 0.78rem;
+  font-weight: 700;
   line-height: 1;
   cursor: pointer;
 }
@@ -406,13 +415,6 @@ body {
   outline: none;
   border-color: var(--blue);
   background: #e4ecff;
-}
-
-.copy-weight-btn:disabled {
-  opacity: 0.4;
-  cursor: default;
-  background: #fafafa;
-  color: var(--muted);
 }
 
 .set-table tr.done td.set-num {
@@ -1002,7 +1004,7 @@ function exerciseImageSrc(id) {
  */
 
 const REST_SECONDS = 120;
-const APP_VERSION = '2026.10.17-1';
+const APP_VERSION = '2026.10.17-2';
 
 const WORKOUT_DAYS = [
   {
@@ -1514,21 +1516,25 @@ function weightUnitSelect(unit, exId) {
   `;
 }
 
-function weightSelects(whole, frac, ariaLabel, copyFromSet = null) {
+function weightSelects(whole, frac, ariaLabel) {
   const fracSel = frac || '0';
   const fracOptions = WEIGHT_FRAC_OPTIONS.map(
     (f) =>
       `<option value="${f}"${fracSel === f ? ' selected' : ''}>.${f.replace('0.', '') || '0'}</option>`
   ).join('');
-  const copyBtn =
-    copyFromSet == null
-      ? ''
-      : `<button type="button" class="copy-weight-btn" data-action="copy-weight" data-from-set="${copyFromSet}" title="Match previous set weight" aria-label="Match previous set weight">=</button>`;
   return `
     <div class="weight-input">
       <select data-field="weight" aria-label="${attrEscape(ariaLabel)}">${buildSelectOptions(0, WEIGHT_WHOLE_MAX, whole)}</select>
       <select data-field="weight-frac" aria-label="${attrEscape(ariaLabel)} fraction">${fracOptions}</select>
-      ${copyBtn}
+    </div>
+  `;
+}
+
+function weightColumnHeader(unit, exId) {
+  return `
+    <div class="col-kg-head">
+      <button type="button" class="copy-weight-btn" data-action="copy-weight" data-ex-id="${attrEscape(exId)}" title="Fill all sets with the same weight" aria-label="Fill all sets with the same weight">=</button>
+      ${weightUnitSelect(unit, exId)}
     </div>
   `;
 }
@@ -1918,7 +1924,7 @@ function renderExerciseCard(ex, dayId, draft) {
             hasWeight
               ? `
             <td>${repsSelect(row.reps, `Set ${i + 1} reps`)}</td>
-            <td>${weightSelects(whole, frac, `Set ${i + 1} weight`, i > 0 ? i - 1 : null)}</td>
+            <td>${weightSelects(whole, frac, `Set ${i + 1} weight`)}</td>
           `
               : `
             <td colspan="2">${repsSelect(row.reps, `Set ${i + 1} reps`)}</td>
@@ -1930,7 +1936,7 @@ function renderExerciseCard(ex, dayId, draft) {
     .join('');
 
   const headerCols = hasWeight
-    ? `<th>Set</th><th>Previous</th><th class="col-reps">Reps</th><th class="col-kg">${weightUnitSelect(unit, ex.id)}</th>`
+    ? `<th>Set</th><th>Previous</th><th class="col-reps">Reps</th><th class="col-kg">${weightColumnHeader(unit, ex.id)}</th>`
     : `<th>Set</th><th>Previous</th><th class="col-reps" colspan="2">Reps</th>`;
 
   return `
@@ -2055,15 +2061,25 @@ function bindSessionEvents(dayId, draft) {
 
   app.querySelectorAll('[data-action="copy-weight"]').forEach((btn) => {
     btn.addEventListener('click', () => {
-      const tr = btn.closest('tr');
-      const exId = tr?.dataset.ex;
-      const setIdx = Number(tr?.dataset.set);
-      const fromIdx = Number(btn.dataset.fromSet);
+      const exId = btn.dataset.exId;
       const entry = draft.exercises[exId];
-      if (!entry?.sets?.[setIdx] || !entry.sets[fromIdx]) return;
-      const prevWeight = entry.sets[fromIdx].weight;
-      if (!prevWeight) return;
-      entry.sets[setIdx].weight = prevWeight;
+      if (!entry?.sets?.length) return;
+
+      // Sync live dropdown values into draft first
+      const card = btn.closest('.exercise-card');
+      card?.querySelectorAll('tr[data-ex][data-set]').forEach((tr) => {
+        const setIdx = Number(tr.dataset.set);
+        if (!entry.sets[setIdx]) return;
+        const whole = tr.querySelector('[data-field="weight"]')?.value ?? '';
+        const frac = tr.querySelector('[data-field="weight-frac"]')?.value ?? '0';
+        entry.sets[setIdx].weight = combineWeight(whole, frac);
+      });
+
+      const sourceWeight = entry.sets.map((s) => s.weight).find((w) => w && String(w).trim() !== '');
+      if (!sourceWeight) return;
+      entry.sets.forEach((s) => {
+        s.weight = sourceWeight;
+      });
       setDraftForDay(dayId, draft);
       renderSession(dayId);
     });
